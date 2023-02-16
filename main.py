@@ -4,11 +4,11 @@ import package as p
 import csv
 
 
-hashTable = hash.ChainingHashTable()
+hashTable = hash.ChainingHashTable(40)
 
 def main():
     #algo.tsp(dataSet) #to run algo
-
+    loadPackageData("WGUPS Package File.csv")
 
     return
 
@@ -26,7 +26,7 @@ def loadPackageData(fileName):
             mass = package[6]
             note = package[7]
            
-            p = p.Package(id, address, city, state, zip, deadline, mass, note)
+            pack = p.Package(id, address, city, state, zip, deadline, mass, note)
  
             # insert it into the hash table
             hashTable.insert(id, p)
