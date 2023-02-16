@@ -1,6 +1,6 @@
 
 class Package:
-    def __init__(self, id, address, city, state, zip, deadline, mass):
+    def __init__(self, id, address, city, state, zip, deadline, mass, specialNote):
         self.id = id
         self.address = address
         self.city = city
@@ -8,6 +8,7 @@ class Package:
         self.zip = zip
         self. deadline = deadline
         self.mass = mass
+        self.specialNote = specialNote
         self.status = "at hub"
 
     def getID(self):
@@ -51,6 +52,12 @@ class Package:
 
     def setMass(self, value):
         self.mass = value
+
+    def getSpecialNote(self):
+        return self.specialNote
+
+    def setSpecialNote(self, value):
+        self.specialNote = value
 
     def getStatus(self):
         return self.status
