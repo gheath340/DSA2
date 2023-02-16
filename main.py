@@ -6,13 +6,16 @@ import csv
 
 hashTable = hash.ChainingHashTable(40)
 distancesList = []
+addressesList = []
 
 def main():
     #algo.tsp(dataSet) #to run algo
-    loadPackageData("WGUPS Package File.csv")
-    loadDistanceData("WGUPS Distance Table.csv")
+    loadPackageData("packageFile.csv")
+    loadDistanceData("distanceFile.csv")
+    #loadAddressData("addressFile.csv")
+    for p in addressesList:
+        print(str(p) + "\n")
 
-    return
 
 def loadPackageData(fileName):
     with open(fileName) as packages:
@@ -32,14 +35,26 @@ def loadPackageData(fileName):
  
             hashTable.insert(id, p)
 
+
 def loadDistanceData(fileName):
     with open(fileName) as distances:
         distanceData = csv.reader(distances, delimiter=',')
         next(distanceData)
         for distance in distanceData:
+            a = distance[0]
+            distance.pop(0)
             d = [distance]
 
+            addressesList.append(a)
             distancesList.append(d)
+
+
+def loadAddressData(fileName):
+    with open(fileName) as addresses:
+        addressData = csv.reader(addresses, delimiter=',')
+        next(addressData)
+        for address in addressData:
+            addressesList.append(address)
 
 
 if (__name__ == "__main__"):
