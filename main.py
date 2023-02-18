@@ -6,34 +6,51 @@ import csv
 
 
 PACKAGES = hash.ChainingHashTable(40)
-DISTANCELIST = []
+DISTANCEDICT = {}
 ADDRESSLIST = []
+
 
 def main():
     loadPackageData("packageFile.csv")
     loadDistanceData("goodDistanceTable.csv")
-    truck1 = [1, 13, 14, 15, 16, 19, 20, 29, 30, 31, 34, 37, 40, 2, 4, 5]
-    truck2 = [3, 6, 18, 25, 36, 38, 7, 8, 10, 11, 12, 17, 21, 22, 23, 24]
-    truck3 = [9, 28, 32, 26, 27, 33, 35, 39]
-    #MAPPING ALL DISTANCES OF ADDRESSES TO EACHOTHER
+    truck1 = [1, 2, 4, 5, 13, 14, 15, 16, 19, 20, 29, 30, 31, 34, 37, 40]
+    truck2 = [3, 6, 7, 8, 10, 11, 12, 17, 18, 21, 22, 23, 24, 25, 36, 38]
+    truck3 = [9, 26, 27, 28, 32, 33, 35, 39]
+    #FIGURING OUT HOW IM MAKING GRAPHS AND HOW IM CONNECTING ALL VERTEXES
     #create graph for each truck
     t1Graph = graph.Graph()
     t2Graph = graph.Graph()
     t3Graph = graph.Graph()
+    # for distance in DISTANCEDICT:
+    #     print(distance + str(DISTANCEDICT[distance]))
     #generate vertecies for each truck
     for i in range(len(truck1)):
-        vertex = graph.Vertex(str(truck1[i]))
+        vertex = graph.Vertex(truck1[i])
         t1Graph.add_vertex(vertex)
     for i in range(len(truck2)):
-        vertex = graph.Vertex(str(truck2[i]))
+        vertex = graph.Vertex(truck2[i])
         t2Graph.add_vertex(vertex)
     for i in range(len(truck3)):
-        vertex = graph.Vertex(str(truck3[i]))
+        vertex = graph.Vertex(truck3[i])
         t3Graph.add_vertex(vertex)
     #generate edges for each truck(from each vertex to every other vertex) length^2
     for i in range(len(truck1)):
-        for j in range(len(truck1)):
-            t1Graph.add_undirected_edge(truck1[i], truck1[j], )
+        for j in range(1, len(truck1)):
+            package1 = PACKAGES.search(truck1[i])
+            package1Address = package1.getAddress()
+            package2 = PACKAGES.search(truck1[j])
+            package2Address = package2.getAddress()
+            dList = DISTANCEDICT[package1Address]
+
+            counter = 0
+            while ADDRESSLIST[counter] != package2Address:
+                counter += 1
+            distance = dList[counter]
+            print(package1Address)
+            print(package2Address)
+            print(distance)
+            break
+            #t1Graph.add_undirected_edge(truck1[i], truck1[j], distance)
 
 
 def loadPackageData(fileName):
@@ -52,7 +69,7 @@ def loadPackageData(fileName):
            
             pack = p.Package(id, address, city, state, zip, deadline, mass, note)
  
-            PACKAGES.insert(id, p)
+            PACKAGES.insert(id, pack)
 
 
 def loadDistanceData(fileName):
@@ -64,7 +81,7 @@ def loadDistanceData(fileName):
             d = [distance]
 
             ADDRESSLIST.append(a)
-            DISTANCELIST.append(d)
+            DISTANCEDICT[a] = d
 
 
 if (__name__ == "__main__"):
