@@ -45,12 +45,11 @@ def main():
             counter = 0
             while ADDRESSLIST[counter] != package2Address:
                 counter += 1
-            distance = dList[counter]
+            distance = dList[0][counter]
             print(package1Address)
             print(package2Address)
             print(distance)
-            break
-            #t1Graph.add_undirected_edge(truck1[i], truck1[j], distance)
+            t1Graph.add_undirected_edge(t1Graph.vertexList[truck1[i]], t1Graph.vertexList[truck1[j]], distance)
 
 
 def loadPackageData(fileName):
