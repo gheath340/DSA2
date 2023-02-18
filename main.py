@@ -33,23 +33,26 @@ def main():
     for i in range(len(truck3)):
         vertex = graph.Vertex(truck3[i])
         t3Graph.add_vertex(vertex)
-    #generate edges for each truck(from each vertex to every other vertex) length^2
-    for i in range(len(truck1)):
-        for j in range(1, len(truck1)):
-            package1 = PACKAGES.search(truck1[i])
-            package1Address = package1.getAddress()
-            package2 = PACKAGES.search(truck1[j])
-            package2Address = package2.getAddress()
-            dList = DISTANCEDICT[package1Address]
+    #generate edges for each truck
+    for truck in [truck1, truck2, truck3]:
+        for i in range(len(truck)):
+            for j in range(1, len(truck)):
+                package1 = PACKAGES.search(truck[i])
+                package1Address = package1.getAddress()
+                package2 = PACKAGES.search(truck[j])
+                package2Address = package2.getAddress()
+                dList = DISTANCEDICT[package1Address]
 
-            counter = 0
-            while ADDRESSLIST[counter] != package2Address:
-                counter += 1
-            distance = dList[0][counter]
-            print(package1Address)
-            print(package2Address)
-            print(distance)
-            t1Graph.add_undirected_edge(t1Graph.vertexList[truck1[i]], t1Graph.vertexList[truck1[j]], distance)
+                counter = 0
+                while ADDRESSLIST[counter] != package2Address:
+                    counter += 1
+                distance = dList[0][counter]
+                if truck == truck1:
+                    t1Graph.add_undirected_edge(t1Graph.vertexList[truck[i]], t1Graph.vertexList[truck[j]], distance)
+                elif truck == truck2:
+                    t2Graph.add_undirected_edge(t2Graph.vertexList[truck[i]], t2Graph.vertexList[truck[j]], distance)
+                else:
+                    t3Graph.add_undirected_edge(t3Graph.vertexList[truck[i]], t3Graph.vertexList[truck[j]], distance)
 
 
 def loadPackageData(fileName):
