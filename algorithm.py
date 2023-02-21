@@ -36,6 +36,27 @@ def dijkstra_shortest_path(g, start_vertex):
             if alternative_path_distance < adj_vertex.distance:
                 adj_vertex.distance = alternative_path_distance
                 adj_vertex.pred_vertex = current_vertex
+#pass in graph and node object
+def nearestN(graph, starting):
+    path = []
+    for vertex in graph.vertexList:
+        graph.vertexList[vertex].Visited = False
+    current = starting
+    for vertex in graph.vertexList:
+        if graph.vertexList[vertex].Visited == False:
+            graph.vertexList[current].Visited = True
+            low = 99999
+            current = vertex
+            for vertex in graph.vertexList:
+                if vertex != current:
+                    distance = graph.edgeWeights[{current, vertex}]
+                    if distance < low:
+                        low = distance
+                path.append(low)
+    #for vertex in vertex list
+        #check for an edge and look at that edges weight
+        #if lower that lowest make that lowest
+    #take the path of the lowest
                 
 # def get_shortest_path(start_vertex, end_vertex):
 #     # Start from end_vertex and build the path backwards.

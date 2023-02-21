@@ -18,24 +18,52 @@ t1Graph = graph.Graph()
 t2Graph = graph.Graph()
 t3Graph = graph.Graph()
 
-#LEFT OFF
-    #can call dijkstras and it runs successfully
-    #need to figure out whats next
-    #how to run through vertecies in the best way?
+
 def main():
     loadPackageData("packageFile.csv")
     loadDistanceData("goodDistanceTable.csv")
     generateVertecies()
     startVertexEdgesCreate()
     generateEdges()
-    algo.dijkstra_shortest_path(t1Graph, t1Graph.vertexList[0])
+    t1Path, t1Distances = getPath(t1Graph, t1Graph.vertexList[truck1[0]])
+    t2Path, t2Distances = getPath(t2Graph, t2Graph.vertexList[truck2[0]])
+    t3Path, t3Distances = getPath(t3Graph, t3Graph.vertexList[truck3[0]])
 
-    print("\nDijkstra shortest path:")
-    for v in t1Graph.adjacency_list:
-        if v.pred_vertex is None and v is not t1Graph.vertexList[0]:
-            print("HUB to %s ==> no path exists" % v.label)
-        else:
-            print("HUB to %s ==> %s (total distance: %g)" % (v.label, get_shortest_path(t1Graph.vertexList[0], v), v.distance))
+    t1TotalDistance = 0
+    for i in range(len(t1Distances)):
+        t1TotalDistance += t1Distances[i]
+    print(t1TotalDistance)
+
+#trucks graph and start vertex object
+def getPath(graph, start):
+    path = []
+    #will need distances to add up total distance
+    distances = []
+    path.append(start)
+    current = start
+    current.Visited = True
+    distance, vertex = shortestDistance(graph, current)
+    while vertex != None:
+        path.append(vertex)
+        current = vertex
+        current.Visited = True
+        distance, vertex = shortestDistance(graph, current)
+
+    return [path, distances]
+        
+
+#pass in vertex object
+def shortestDistance(graph, vertex):
+    lowDistance = 9999
+    lowObject = None
+    for v in graph.vertexList:
+        if graph.vertexList[v].Visited == False:
+            distance = graph.edge_weights[{vertex, graph.vertexList[v]}]
+            if distance < lowDistance:
+                lowDistance = distance
+                lowObject = graph.vertexList[v]
+    return [lowDistance, lowObject]
+
     
 def get_shortest_path(start_vertex, end_vertex):
     # Start from end_vertex and build the path backwards.
@@ -81,7 +109,7 @@ def startVertexEdgesCreate():
                 t3Graph.add_undirected_edge(t3Graph.vertexList[0], t3Graph.vertexList[truck[i]], distance)
 
     return
-
+#edges created by vertex objects not ids
 def generateEdges():
     #generate edges for each truck
     for truck in [truck1, truck2, truck3]:

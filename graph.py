@@ -5,6 +5,7 @@ class Vertex:
         self.label = label
         self.distance = float('inf')
         self.pred_vertex = None
+        self.Visited = False
 
     def getLabel(self):
         return self.label
