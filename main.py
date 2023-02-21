@@ -3,6 +3,7 @@ import hashTable as hash
 import package as p
 import graph
 import csv
+import os.path
 
 
 PACKAGES = hash.ChainingHashTable(40)
@@ -20,19 +21,18 @@ t3Graph = graph.Graph()
 
 
 def main():
-    loadPackageData("packageFile.csv")
-    loadDistanceData("goodDistanceTable.csv")
+    loadPackageData("/Users/garrettheath/Desktop/projects/DSA2/packageFile.csv")
+    loadDistanceData("/Users/garrettheath/Desktop/projects/DSA2/goodDistanceTable.csv")
     generateVertecies()
     startVertexEdgesCreate()
     generateEdges()
-    t1Path, t1Distances = getPath(t1Graph, t1Graph.vertexList[truck1[0]])
-    t2Path, t2Distances = getPath(t2Graph, t2Graph.vertexList[truck2[0]])
-    t3Path, t3Distances = getPath(t3Graph, t3Graph.vertexList[truck3[0]])
+    t1Path, t1Distances = getPath(t1Graph, t1Graph.vertexList[0])
+    t2Path, t2Distances = getPath(t2Graph, t2Graph.vertexList[0])
+    t3Path, t3Distances = getPath(t3Graph, t3Graph.vertexList[0])
 
     t1TotalDistance = 0
     for i in range(len(t1Distances)):
-        t1TotalDistance += t1Distances[i]
-    print(t1TotalDistance)
+        print(t1Distances[i])
 
 #trucks graph and start vertex object
 def getPath(graph, start):
@@ -41,13 +41,15 @@ def getPath(graph, start):
     distances = []
     path.append(start)
     current = start
-    current.Visited = True
+    start.Visited = True
     distance, vertex = shortestDistance(graph, current)
+    distances.append(distance)
     while vertex != None:
         path.append(vertex)
         current = vertex
         current.Visited = True
         distance, vertex = shortestDistance(graph, current)
+        distances.append(distance)
 
     return [path, distances]
         
@@ -58,8 +60,8 @@ def shortestDistance(graph, vertex):
     lowObject = None
     for v in graph.vertexList:
         if graph.vertexList[v].Visited == False:
-            distance = graph.edge_weights[{vertex, graph.vertexList[v]}]
-            if distance < lowDistance:
+            distance = graph.edge_weights[(vertex, graph.vertexList[v])]
+            if float(distance) < float(lowDistance):
                 lowDistance = distance
                 lowObject = graph.vertexList[v]
     return [lowDistance, lowObject]
@@ -77,7 +79,7 @@ def get_shortest_path(start_vertex, end_vertex):
 
 def generateVertecies():
     #generate vertecies for each truck
-    v = graph.Vertex(0)
+    v = graph.Vertex(0, True)
     for g in [t1Graph, t2Graph, t3Graph]:
         g.add_vertex(v)
     for truck in [truck1, truck2, truck3]:
@@ -135,34 +137,36 @@ def generateEdges():
 
 #load package data into items and hashTable
 def loadPackageData(fileName):
-    with open(fileName) as packages:
-        packageData = csv.reader(packages, delimiter=',')
-        next(packageData)
-        for package in packageData:
-            id = int(package[0])
-            address = package[1]
-            city = package[2]
-            state = package[3]
-            zip = package[4]
-            deadline = package[5]
-            mass = package[6]
-            note = package[7]
+    #if os.path.isfile(fileName):
+        with open(fileName) as packages:
+            packageData = csv.reader(packages, delimiter=',')
+            next(packageData)
+            for package in packageData:
+                id = int(package[0])
+                address = package[1]
+                city = package[2]
+                state = package[3]
+                zip = package[4]
+                deadline = package[5]
+                mass = package[6]
+                note = package[7]
            
-            pack = p.Package(id, address, city, state, zip, deadline, mass, note)
+                pack = p.Package(id, address, city, state, zip, deadline, mass, note)
  
-            PACKAGES.insert(id, pack)
+                PACKAGES.insert(id, pack)
 
 #load distance data into distance dictionary and addresslist
 def loadDistanceData(fileName):
-    with open(fileName) as distances:
-        distanceData = csv.reader(distances, delimiter=',')
-        for distance in distanceData:
-            a = distance[0]
-            distance.pop(0)
-            d = [distance]
+    if os.path.isfile(fileName):
+        with open(fileName) as distances:
+            distanceData = csv.reader(distances, delimiter=',')
+            for distance in distanceData:
+                a = distance[0]
+                distance.pop(0)
+                d = [distance]
 
-            ADDRESSLIST.append(a)
-            DISTANCEDICT[a] = d
+                ADDRESSLIST.append(a)
+                DISTANCEDICT[a] = d
 
 
 if (__name__ == "__main__"):

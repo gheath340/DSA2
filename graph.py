@@ -1,11 +1,11 @@
 class Vertex:
     # Constructor for a new Vertx object. All vertex objects
     # start with a distance of positive infinity.
-    def __init__(self, label):
+    def __init__(self, label, visited=False):
         self.label = label
         self.distance = float('inf')
         self.pred_vertex = None
-        self.Visited = False
+        self.Visited = visited
 
     def getLabel(self):
         return self.label
