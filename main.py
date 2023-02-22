@@ -1,3 +1,4 @@
+#GARRETT HEATH 010229298
 import algorithm as algo
 import hashTable as hash
 import package as p
@@ -5,7 +6,7 @@ import graph
 import csv
 import os.path
 
-
+#formatting time   result = '{0:02.0f}:{1:02.0f}'.format(*divmod(time * 60, 60))
 PACKAGES = hash.ChainingHashTable(40)
 DISTANCEDICT = {}
 ADDRESSLIST = []
@@ -18,9 +19,17 @@ truck3 = [9, 26, 27, 28, 32, 33, 35, 39]
 t1Graph = graph.Graph()
 t2Graph = graph.Graph()
 t3Graph = graph.Graph()
+#truck speed mph
+truckSpeed = 18
+#time for each truck
+t1Time = 8.0
+t2Time = 9.08333333333
+t3Time = 0.0
 
 
 def main():
+    #TO DO: KEEP TRACK OF TIME AND UPDATE DELIVERY STATUS
+    #PACKAGE WITH WRONG ADDRESS
     loadPackageData("/Users/garrettheath/Desktop/projects/DSA2/packageFile.csv")
     loadDistanceData("/Users/garrettheath/Desktop/projects/DSA2/goodDistanceTable.csv")
     generateVertecies()
@@ -38,6 +47,26 @@ def main():
         totalDistance += float(distance)
 
     print(totalDistance)
+
+def deliverPackage(truck, graph, id, truckTime, distance):
+    package = PACKAGES.search(id)
+    deliveryTime = distance / truckSpeed
+    truckTime
+
+def deliverPackages(truck, graph):
+    distance = 0
+    #get path and distances for truck
+    #loop through both lists
+    #for each item take the packageID(vertex label) adjust the delivery status to delivered(w/time)
+        #calculate the time that drive took based on miles and 18 mph speed
+        #add time to trucks time
+        #add distance to trucks distance
+    truckPath, truckDistance = getPath(graph, graph.vertexList[0])
+    for stop in truckPath:
+        time = 0.0
+        package = PACKAGES.search(stop)
+        package.setStatus("Delivered at " + time)
+    return distance
 
 #trucks graph and start vertex object
 def getPath(graph, start):
