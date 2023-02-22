@@ -26,18 +26,18 @@ def main():
     generateVertecies()
     startVertexEdgesCreate()
     generateEdges()
+    totalDistance = 0
     t1Path, t1Distances = getPath(t1Graph, t1Graph.vertexList[0])
     t2Path, t2Distances = getPath(t2Graph, t2Graph.vertexList[0])
     t3Path, t3Distances = getPath(t3Graph, t3Graph.vertexList[0])
+    for distance in t1Distances:
+        totalDistance += float(distance)
+    for distance in t2Distances:
+        totalDistance += float(distance)
+    for distance in t3Distances:
+        totalDistance += float(distance)
 
-    #
-    t1TotalDistance = 0
-    for i in range(len(t1Distances)):
-        print(t1Distances[i])
-
-    t2TotalDistance = 0
-    for i in range(len(t2Distances)):
-        print(t2Distances[i])
+    print(totalDistance)
 
 #trucks graph and start vertex object
 def getPath(graph, start):
