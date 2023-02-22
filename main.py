@@ -30,9 +30,14 @@ def main():
     t2Path, t2Distances = getPath(t2Graph, t2Graph.vertexList[0])
     t3Path, t3Distances = getPath(t3Graph, t3Graph.vertexList[0])
 
+    #
     t1TotalDistance = 0
     for i in range(len(t1Distances)):
         print(t1Distances[i])
+
+    t2TotalDistance = 0
+    for i in range(len(t2Distances)):
+        print(t2Distances[i])
 
 #trucks graph and start vertex object
 def getPath(graph, start):
@@ -49,7 +54,8 @@ def getPath(graph, start):
         current = vertex
         current.Visited = True
         distance, vertex = shortestDistance(graph, current)
-        distances.append(distance)
+        if distance != 9999:
+            distances.append(distance)
 
     return [path, distances]
         
