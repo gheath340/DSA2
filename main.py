@@ -30,6 +30,7 @@ t3Time = datetime.datetime(100,1,1,10,20,00)
 
 def main():
     #PACKAGE WITH WRONG ADDRESS PACKAGE 9 (if they enter a time 10:20 or later just say the address was updated)
+    #make it so on dealing with packages only deliver ones that have times before entered time
     loadPackageData("/Users/garrettheath/Desktop/projects/DSA2/packageFile.csv")
     loadDistanceData("/Users/garrettheath/Desktop/projects/DSA2/goodDistanceTable.csv")
     generateVertecies()
@@ -38,16 +39,26 @@ def main():
     truck1Obj = truck.Truck(truck1, t1Graph, t1Time)
     truck2Obj = truck.Truck(truck2, t2Graph, t2Time)
     truck3Obj = truck.Truck(truck3, t3Graph, t3Time)
-    totalDistance = 0
+
     t1Path, t1Distances = getPath(t1Graph, t1Graph.vertexList[0])
     t2Path, t2Distances = getPath(t2Graph, t2Graph.vertexList[0])
     t3Path, t3Distances = getPath(t3Graph, t3Graph.vertexList[0])
+
+    #get time
+    #deliver packages until that time
+    #display options menu
+    checkTime = input("What time? (military time HH:MM:SS): ")
 
     truck1Distance = deliverPackages(t1Path, t1Distances, truck1Obj, t1Graph)
     truck2Distance = deliverPackages(t2Path, t2Distances, truck2Obj, t2Graph)
     truck3Distance = deliverPackages(t3Path, t3Distances, truck3Obj, t3Graph)
     totalDistance = truck1Distance + truck2Distance + truck3Distance
-    print(totalDistance)
+
+    print("1. Print All Package Status and Total Mileage")
+    print("2. Get a Single Package Status with a Time")
+    print("3. Get All Package Status with a Time")
+    print("4. Exit the Program")
+    option = input("Enter number of option youd like to select: ")
 
 
 
