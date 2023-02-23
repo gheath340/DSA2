@@ -21,7 +21,7 @@ class Package:
         return self.address
 
     def setAddress(self, value):
-        self.addressd = value
+        self.address = value
         
     def getCity(self):
         return self.city
