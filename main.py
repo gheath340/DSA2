@@ -12,11 +12,10 @@ PACKAGES = hash.ChainingHashTable(40)
 DISTANCEDICT = {}
 ADDRESSLIST = []
 
-truck1 = truck.Truck()
 #package ids for each truck
-truck1L = [1, 2, 4, 5, 13, 14, 15, 16, 19, 20, 29, 30, 31, 34, 37, 40]
-truck2L = [3, 6, 7, 8, 10, 11, 12, 17, 18, 21, 22, 23, 24, 25, 36, 38]
-truck3L = [9, 26, 27, 28, 32, 33, 35, 39]
+truck1 = [1, 2, 4, 5, 13, 14, 15, 16, 19, 20, 29, 30, 31, 34, 37, 40]
+truck2 = [3, 6, 7, 8, 10, 11, 12, 17, 18, 21, 22, 23, 24, 25, 36, 38]
+truck3 = [9, 26, 27, 28, 32, 33, 35, 39]
 #create graph for each truck
 t1Graph = graph.Graph()
 t2Graph = graph.Graph()
@@ -28,11 +27,6 @@ t1Time = 8.0
 t2Time = 9.08333333333
 t3Time = 0.0
 
-truck1 = truck.Truck(truck1L, t1Graph, t1Time)
-truck2 = truck.Truck(truck2L, t2Graph, t2Time)
-truck3 = truck.Truck(truck3L, t3Graph, t3Time)
-
-#LEFT OFF ABOUT TO MAKE EVERYTHING WITH TRUCK OBJECTS
 def main():
     #TO DO: KEEP TRACK OF TIME AND UPDATE DELIVERY STATUS
     #PACKAGE WITH WRONG ADDRESS
@@ -41,6 +35,9 @@ def main():
     generateVertecies()
     startVertexEdgesCreate()
     generateEdges()
+    truck1Obj = truck.Truck(truck1, t1Graph, t1Time)
+    truck2Obj = truck.Truck(truck2, t2Graph, t2Time)
+    truck3Obj = truck.Truck(truck3, t3Graph, t3Time)
     totalDistance = 0
     t1Path, t1Distances = getPath(t1Graph, t1Graph.vertexList[0])
     t2Path, t2Distances = getPath(t2Graph, t2Graph.vertexList[0])
