@@ -6,6 +6,7 @@ import graph
 import csv
 import os.path
 import truck
+import datetime
 
 #formatting time   result = '{0:02.0f}:{1:02.0f}'.format(*divmod(time * 60, 60))
 PACKAGES = hash.ChainingHashTable(40)
@@ -23,13 +24,12 @@ t3Graph = graph.Graph()
 #truck speed mph
 truckSpeed = 18
 #time for each truck
-t1Time = 8.0
-t2Time = 9.08333333333
-t3Time = 0.0
+t1Time = datetime.datetime(100,1,1,8,0,0)
+t2Time = datetime.datetime(100,1,1,9,5,0)
+t3Time = datetime.datetime(100,1,1,10,20,00)
 
 def main():
-    #TO DO: KEEP TRACK OF TIME AND UPDATE DELIVERY STATUS
-    #PACKAGE WITH WRONG ADDRESS
+    #PACKAGE WITH WRONG ADDRESS PACKAGE 9 (if they enter a time 10:20 or later just say the address was updated)
     loadPackageData("/Users/garrettheath/Desktop/projects/DSA2/packageFile.csv")
     loadDistanceData("/Users/garrettheath/Desktop/projects/DSA2/goodDistanceTable.csv")
     generateVertecies()
@@ -42,34 +42,37 @@ def main():
     t1Path, t1Distances = getPath(t1Graph, t1Graph.vertexList[0])
     t2Path, t2Distances = getPath(t2Graph, t2Graph.vertexList[0])
     t3Path, t3Distances = getPath(t3Graph, t3Graph.vertexList[0])
-    for distance in t1Distances:
-        totalDistance += float(distance)
-    for distance in t2Distances:
-        totalDistance += float(distance)
-    for distance in t3Distances:
-        totalDistance += float(distance)
 
+    truck1Distance = deliverPackages(t1Path, t1Distances, truck1Obj, t1Graph)
+    truck2Distance = deliverPackages(t2Path, t2Distances, truck2Obj, t2Graph)
+    truck3Distance = deliverPackages(t3Path, t3Distances, truck3Obj, t3Graph)
+    totalDistance = truck1Distance + truck2Distance + truck3Distance
     print(totalDistance)
 
-def deliverPackage(truck, graph, id, truckTime, distance):
-    package = PACKAGES.search(id)
-    deliveryTime = distance / truckSpeed
-    truckTime
 
-def deliverPackages(truck, graph):
-    distance = 0
-    #get path and distances for truck
-    #loop through both lists
-    #for each item take the packageID(vertex label) adjust the delivery status to delivered(w/time)
-        #calculate the time that drive took based on miles and 18 mph speed
-        #add time to trucks time
-        #add distance to trucks distance
-    truckPath, truckDistance = getPath(graph, graph.vertexList[0])
-    for stop in truckPath:
-        time = 0.0
-        package = PACKAGES.search(stop)
-        package.setStatus("Delivered at " + time)
-    return distance
+
+#updating time: b = a + datetime.timedelta(seconds=3)
+#mark package as delivered(w/ time) and update truck time
+def deliverPackage(truck, id, distance):
+    #get the package
+    package = PACKAGES.search(id.label)
+    deliveryTime = (distance / truckSpeed) * 3600
+    truck.time +=  datetime.timedelta(seconds=deliveryTime)
+    package.setStatus("Delivered at " + str(truck.time))
+
+#get path and distances
+#NOTE distance[i] = distance from path[i] -> path[i+1]
+#for item in path
+    #get distance from previous item to current
+    #call devliverPackage
+def deliverPackages(truckPath, truckDistances, truck, graph):
+    totalDistance = 0.0
+    for id in range(len(truckPath)):
+        if truckPath[id].label != 0:
+            distance = truckDistances[id-1]
+            deliverPackage(truck, truckPath[id], float(distance))
+            totalDistance += float(distance)
+    return totalDistance
 
 #trucks graph and start vertex object
 def getPath(graph, start):
