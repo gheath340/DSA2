@@ -4,12 +4,11 @@ import hashTable as hash
 import package as p
 import graph
 import csv
-import os.path
+import os
 import truck
 import datetime
 import re
 
-#formatting time   result = '{0:02.0f}:{1:02.0f}'.format(*divmod(time * 60, 60))
 PACKAGES = hash.ChainingHashTable(40)
 DISTANCEDICT = {}
 ADDRESSLIST = []
@@ -30,8 +29,6 @@ t2Time = datetime.datetime(100,1,1,9,5,0)
 t3Time = datetime.datetime(100,1,1,10,20,00)
 
 def main():
-    #PACKAGE WITH WRONG ADDRESS PACKAGE 9 if check time is past 10:20 change packages address
-    #make it so on dealing with packages only deliver ones that have times before entered time
     loadPackageData("/Users/garrettheath/Desktop/projects/DSA2/packageFile.csv")
     loadDistanceData("/Users/garrettheath/Desktop/projects/DSA2/goodDistanceTable.csv")
     generateVertecies()
@@ -45,56 +42,93 @@ def main():
     t2Path, t2Distances = getPath(t2Graph, t2Graph.vertexList[0])
     t3Path, t3Distances = getPath(t3Graph, t3Graph.vertexList[0])
 
-    #get time
-    #deliver packages until that time
-    #display options menu
     checkTime = input("What time? (military time HH:MM:SS): ")
+
     if re.match('^[0-9]{2}:[0-9]{2}:[0-9]{2}$', checkTime):
-        if checkTime > "10:20:00":
-            PACKAGES.search(9).setAddress("410 S State St")
         truck1Left = checkTruckLeavingTime(checkTime, truck1Obj)
         truck2Left = checkTruckLeavingTime(checkTime, truck2Obj)
         truck3Left = checkTruckLeavingTime(checkTime, truck3Obj)
+        if truck1Left:
+            truck1Obj.distance = deliverPackages(t1Path, t1Distances, truck1Obj, t1Graph, checkTime)
+        if truck2Left:
+            truck2Obj.distance = deliverPackages(t2Path, t2Distances, truck2Obj, t2Graph, checkTime)
+        if truck3Left:
+            truck3Obj.distance = deliverPackages(t3Path, t3Distances, truck3Obj, t3Graph, checkTime)
+        totalDistance = truck1Obj.distance + truck2Obj.distance + truck3Obj.distance
+        if checkTime > "10:20:00":
+            PACKAGES.search(9).setAddress("410 S State St")
         print("1. Print All Package Status and Total Mileage")
         print("2. Get a Single Package Status with a Time")
         print("3. Get All Package Status with a Time")
-        print("4. Exit the Program")
+        print("4. Get single package info")
+        print("5. Exit Program")
         option = input("Enter number of option youd like to select: ")
+        if option == "1":
+            printAllPackageStatus(truck1Obj, truck2Obj, truck3Obj)
+            print("\nDistance: " + str(totalDistance))
+        elif option == "2":
+            singleID = input("Package ID: ")
+            printPackageStatus(singleID)
+            print("\nTime: " + str(checkTime))
+        elif option == "3":
+            printAllPackageStatus(truck1Obj, truck2Obj, truck3Obj)
+            print("\nTime: " + str(checkTime))
+        elif option == "4":
+            id = input("Package ID: ")
+            printPackageInfo(id)
+        elif option == "5":
+            quit()
+        else:
+            print("Please select a valid option:")
+            option = input("Enter number of option youd like to select: ")
+
+
     else:
         print("Please match the format given.")
         input("What time? (Military time HH:MM:SS): ")
 
-        # truck1Distance = deliverPackages(t1Path, t1Distances, truck1Obj, t1Graph)
-        # truck2Distance = deliverPackages(t2Path, t2Distances, truck2Obj, t2Graph)
-        # truck3Distance = deliverPackages(t3Path, t3Distances, truck3Obj, t3Graph)
-        # totalDistance = truck1Distance + truck2Distance + truck3Distance
+def printPackageInfo(id):
+    package = PACKAGES.search(int(id))
+    print("ID: " + str(package.getID()))
+    print("Address: " + package.getAddress())
+    print("Deadline: " + str(package.getDeadline()))
+    print("City: " + package.getCity())
+    print("Zip: " + str(package.getZip()))
+    print("Weight: " + str(package.getMass()))
+    print("Status: " + package.getStatus())
 
-#delivering packages until specified time
-#take cutoff time as a variable
-#get temp time
-#if temp time is less than cutoffTime then deliver
+def printAllPackageStatus(truck1, truck2, truck3):
+    for package in truck1.packages:
+        print("ID: " + str(package) + "\nStatus: " + PACKAGES.search(package).getStatus())
+    for package in truck2.packages:
+        print("ID: " + str(package) + "\nStatus: " + PACKAGES.search(package).getStatus())
+    for package in truck3.packages:
+        print("ID: " + str(package) + "\nStatus: " + PACKAGES.search(package).getStatus())
+
+def printPackageStatus(id):
+    package = PACKAGES.search(int(id))
+    print(package.getStatus())
+
+
 def deliverPackage(truck, id, distance, cuttoffTime):
-    #get the package
     package = PACKAGES.search(id.label)
     deliveryTime = (distance / truckSpeed) * 3600
     tempTime = truck.time + datetime.timedelta(seconds=deliveryTime)
-    if tempTime < cuttoffTime:
+    if str(tempTime.time()) < cuttoffTime:
         truck.time +=  datetime.timedelta(seconds=deliveryTime)
         package.setStatus("Delivered at " + str(truck.time))
     else:
         package.setStatus("In route")
 
-#NOTE distance[i] = distance from path[i] -> path[i+1]
-def deliverPackages(truckPath, truckDistances, truck, graph):
+def deliverPackages(truckPath, truckDistances, truck, graph, checkTime):
     totalDistance = 0.0
     for id in range(len(truckPath)):
         if truckPath[id].label != 0:
             distance = truckDistances[id-1]
-            deliverPackage(truck, truckPath[id], float(distance))
+            deliverPackage(truck, truckPath[id], float(distance), checkTime)
             totalDistance += float(distance)
     return totalDistance
 
-#trucks graph and start vertex object
 def getPath(graph, start):
     path = []
     distances = []
@@ -113,17 +147,12 @@ def getPath(graph, start):
 
     return [path, distances]
 
-#check if truck has left by the input time
 def checkTruckLeavingTime(cuttoffTime, truck):
-    if truck.time < cuttoffTime:
+    truckTime = str(truck.time.time())
+    if truckTime < cuttoffTime:
         return True
     return False
-        
-#if past trucks leaving time call deliver packages on that truck
-def allStatusWithTime(cuttoffTime):
 
-
-#pass in vertex object
 def shortestDistance(graph, vertex):
     lowDistance = 9999
     lowObject = None
@@ -146,7 +175,6 @@ def get_shortest_path(start_vertex, end_vertex):
     return path
 
 def generateVertecies():
-    #generate vertecies for each truck
     v = graph.Vertex(0, True)
     for g in [t1Graph, t2Graph, t3Graph]:
         g.add_vertex(v)
@@ -179,9 +207,7 @@ def startVertexEdgesCreate():
                 t3Graph.add_undirected_edge(t3Graph.vertexList[0], t3Graph.vertexList[truck[i]], distance)
 
     return
-#edges created by vertex objects not ids
 def generateEdges():
-    #generate edges for each truck
     for truck in [truck1, truck2, truck3]:
         for i in range(len(truck)):
             for j in range(1, len(truck)):
@@ -203,9 +229,7 @@ def generateEdges():
                     t3Graph.add_undirected_edge(t3Graph.vertexList[truck[i]], t3Graph.vertexList[truck[j]], distance)
 
 
-#load package data into items and hashTable
 def loadPackageData(fileName):
-    #if os.path.isfile(fileName):
         with open(fileName) as packages:
             packageData = csv.reader(packages, delimiter=',')
             next(packageData)
@@ -223,7 +247,6 @@ def loadPackageData(fileName):
  
                 PACKAGES.insert(id, pack)
 
-#load distance data into distance dictionary and addresslist
 def loadDistanceData(fileName):
     if os.path.isfile(fileName):
         with open(fileName) as distances:
