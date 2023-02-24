@@ -9,7 +9,7 @@ import truck
 import datetime
 import re
 
-PACKAGES = hash.ChainingHashTable(40)
+PACKAGES = hash.HashTable(40)
 DISTANCEDICT = {}
 ADDRESSLIST = []
 
@@ -26,28 +26,33 @@ truckSpeed = 18
 #time for each truck
 t1Time = datetime.datetime(100,1,1,8,0,0)
 t2Time = datetime.datetime(100,1,1,9,5,0)
-t3Time = datetime.datetime(100,1,1,10,20,00)
+t3Time = datetime.datetime(100,1,1,9,42,00)
 
 def main():
+    #load all data
     loadPackageData("/Users/garrettheath/Desktop/projects/DSA2/packageFile.csv")
     loadDistanceData("/Users/garrettheath/Desktop/projects/DSA2/goodDistanceTable.csv")
+    #create graph data
     generateVertecies()
     startVertexEdgesCreate()
     generateEdges()
+    #truck objects
     truck1Obj = truck.Truck(truck1, t1Graph, t1Time)
     truck2Obj = truck.Truck(truck2, t2Graph, t2Time)
     truck3Obj = truck.Truck(truck3, t3Graph, t3Time)
-
+    #get the path of each truck
     t1Path, t1Distances = getPath(t1Graph, t1Graph.vertexList[0])
     t2Path, t2Distances = getPath(t2Graph, t2Graph.vertexList[0])
     t3Path, t3Distances = getPath(t3Graph, t3Graph.vertexList[0])
 
     checkTime = input("What time? (military time HH:MM:SS): ")
-
+    #make sure input is formatted correctly
     if re.match('^[0-9]{2}:[0-9]{2}:[0-9]{2}$', checkTime):
+        #see if truck has left by entered time
         truck1Left = checkTruckLeavingTime(checkTime, truck1Obj)
         truck2Left = checkTruckLeavingTime(checkTime, truck2Obj)
         truck3Left = checkTruckLeavingTime(checkTime, truck3Obj)
+        #if truck has left deliver packages until input time
         if truck1Left:
             truck1Obj.distance = deliverPackages(t1Path, t1Distances, truck1Obj, t1Graph, checkTime)
         if truck2Left:
@@ -57,6 +62,7 @@ def main():
         totalDistance = truck1Obj.distance + truck2Obj.distance + truck3Obj.distance
         if checkTime > "10:20:00":
             PACKAGES.search(9).setAddress("410 S State St")
+        #ui code
         print("1. Print All Package Status and Total Mileage")
         print("2. Get a Single Package Status with a Time")
         print("3. Get All Package Status with a Time")
@@ -81,12 +87,11 @@ def main():
         else:
             print("Please select a valid option:")
             option = input("Enter number of option youd like to select: ")
-
-
     else:
         print("Please match the format given.")
         input("What time? (Military time HH:MM:SS): ")
 
+#print all info of given package
 def printPackageInfo(id):
     package = PACKAGES.search(int(id))
     print("ID: " + str(package.getID()))
@@ -97,6 +102,7 @@ def printPackageInfo(id):
     print("Weight: " + str(package.getMass()))
     print("Status: " + package.getStatus())
 
+#print status for every package
 def printAllPackageStatus(truck1, truck2, truck3):
     for package in truck1.packages:
         print("ID: " + str(package) + "\nStatus: " + PACKAGES.search(package).getStatus())
@@ -105,11 +111,12 @@ def printAllPackageStatus(truck1, truck2, truck3):
     for package in truck3.packages:
         print("ID: " + str(package) + "\nStatus: " + PACKAGES.search(package).getStatus())
 
+#print status of given package
 def printPackageStatus(id):
     package = PACKAGES.search(int(id))
     print(package.getStatus())
 
-
+#deliver given package/update status
 def deliverPackage(truck, id, distance, cuttoffTime):
     package = PACKAGES.search(id.label)
     deliveryTime = (distance / truckSpeed) * 3600
@@ -120,6 +127,7 @@ def deliverPackage(truck, id, distance, cuttoffTime):
     else:
         package.setStatus("In route")
 
+#deliver/update status of all packages
 def deliverPackages(truckPath, truckDistances, truck, graph, checkTime):
     totalDistance = 0.0
     for id in range(len(truckPath)):
@@ -129,6 +137,7 @@ def deliverPackages(truckPath, truckDistances, truck, graph, checkTime):
             totalDistance += float(distance)
     return totalDistance
 
+#get trucks path
 def getPath(graph, start):
     path = []
     distances = []
@@ -147,12 +156,14 @@ def getPath(graph, start):
 
     return [path, distances]
 
+#see if truck has left at a given time
 def checkTruckLeavingTime(cuttoffTime, truck):
     truckTime = str(truck.time.time())
     if truckTime < cuttoffTime:
         return True
     return False
 
+#get shortest distance from given vertex in a graph
 def shortestDistance(graph, vertex):
     lowDistance = 9999
     lowObject = None
@@ -164,16 +175,7 @@ def shortestDistance(graph, vertex):
                 lowObject = graph.vertexList[v]
     return [lowDistance, lowObject]
 
-def get_shortest_path(start_vertex, end_vertex):
-    # Start from end_vertex and build the path backwards.
-    path = ""
-    current_vertex = end_vertex
-    while current_vertex is not start_vertex:
-        path = " -> " + str(current_vertex.label) + path
-        current_vertex = current_vertex.pred_vertex
-    path = str(start_vertex.label) + path
-    return path
-
+#generate all vertecies
 def generateVertecies():
     v = graph.Vertex(0, True)
     for g in [t1Graph, t2Graph, t3Graph]:
@@ -188,7 +190,7 @@ def generateVertecies():
             else:
                 t3Graph.add_vertex(vertex)
 
-
+#generate edges from hub
 def startVertexEdgesCreate():
     for truck in [truck1, truck2, truck3]:
         for i in range(len(truck)):
@@ -205,8 +207,9 @@ def startVertexEdgesCreate():
                 t2Graph.add_undirected_edge(t2Graph.vertexList[0], t2Graph.vertexList[truck[i]], distance)
             else:
                 t3Graph.add_undirected_edge(t3Graph.vertexList[0], t3Graph.vertexList[truck[i]], distance)
-
     return
+
+#generate all non starting edges
 def generateEdges():
     for truck in [truck1, truck2, truck3]:
         for i in range(len(truck)):
@@ -228,7 +231,7 @@ def generateEdges():
                 else:
                     t3Graph.add_undirected_edge(t3Graph.vertexList[truck[i]], t3Graph.vertexList[truck[j]], distance)
 
-
+#load package data from csv
 def loadPackageData(fileName):
         with open(fileName) as packages:
             packageData = csv.reader(packages, delimiter=',')
@@ -247,6 +250,7 @@ def loadPackageData(fileName):
  
                 PACKAGES.insert(id, pack)
 
+#load distance data from csv
 def loadDistanceData(fileName):
     if os.path.isfile(fileName):
         with open(fileName) as distances:
