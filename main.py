@@ -28,6 +28,7 @@ t1Time = datetime.datetime(100,1,1,8,0,0)
 t2Time = datetime.datetime(100,1,1,9,5,0)
 t3Time = datetime.datetime(100,1,1,9,42,00)
 
+#OVERALL BIGO = O(N^2) + O(N^2) + O(N^2) + O(N^3) + O(N^4) + 3O(2N) + 3O(N) + 2O(N) = O(N^4)
 def main():
     #load all data
     loadPackageData("/Users/garrettheath/Desktop/projects/DSA2/packageFile.csv")
@@ -92,6 +93,7 @@ def main():
         input("What time? (Military time HH:MM:SS): ")
 
 #print all info of given package
+#bigO = O(1)
 def printPackageInfo(id):
     package = PACKAGES.search(int(id))
     print("ID: " + str(package.getID()))
@@ -102,6 +104,7 @@ def printPackageInfo(id):
     print("Weight: " + str(package.getMass()))
     print("Status: " + package.getStatus())
 
+#bigO = O(N)
 #print status for every package
 def printAllPackageStatus(truck1, truck2, truck3):
     for package in truck1.packages:
@@ -112,10 +115,12 @@ def printAllPackageStatus(truck1, truck2, truck3):
         print("ID: " + str(package) + "\nStatus: " + PACKAGES.search(package).getStatus())
 
 #print status of given package
+#bigO = O(1)
 def printPackageStatus(id):
     package = PACKAGES.search(int(id))
     print(package.getStatus())
 
+#bigO = O(1)
 #deliver given package/update status
 def deliverPackage(truck, id, distance, cuttoffTime):
     package = PACKAGES.search(id.label)
@@ -127,6 +132,7 @@ def deliverPackage(truck, id, distance, cuttoffTime):
     else:
         package.setStatus("In route")
 
+#bigO = O(N)
 #deliver/update status of all packages
 def deliverPackages(truckPath, truckDistances, truck, graph, checkTime):
     totalDistance = 0.0
@@ -138,6 +144,7 @@ def deliverPackages(truckPath, truckDistances, truck, graph, checkTime):
     return totalDistance
 
 #get trucks path
+#bigO = O(2N)
 def getPath(graph, start):
     path = []
     distances = []
@@ -157,6 +164,7 @@ def getPath(graph, start):
     return [path, distances]
 
 #see if truck has left at a given time
+#bigO = O(1)
 def checkTruckLeavingTime(cuttoffTime, truck):
     truckTime = str(truck.time.time())
     if truckTime < cuttoffTime:
@@ -164,6 +172,7 @@ def checkTruckLeavingTime(cuttoffTime, truck):
     return False
 
 #get shortest distance from given vertex in a graph
+#bigO = O(N^2)
 def shortestDistance(graph, vertex):
     lowDistance = 9999
     lowObject = None
@@ -175,6 +184,7 @@ def shortestDistance(graph, vertex):
                 lowObject = graph.vertexList[v]
     return [lowDistance, lowObject]
 
+#bigO = O(N^2)
 #generate all vertecies
 def generateVertecies():
     v = graph.Vertex(0, True)
@@ -190,6 +200,7 @@ def generateVertecies():
             else:
                 t3Graph.add_vertex(vertex)
 
+#bigO = O(N^3)
 #generate edges from hub
 def startVertexEdgesCreate():
     for truck in [truck1, truck2, truck3]:
@@ -210,6 +221,7 @@ def startVertexEdgesCreate():
     return
 
 #generate all non starting edges
+#bigO = O(N^4)
 def generateEdges():
     for truck in [truck1, truck2, truck3]:
         for i in range(len(truck)):
@@ -232,6 +244,7 @@ def generateEdges():
                     t3Graph.add_undirected_edge(t3Graph.vertexList[truck[i]], t3Graph.vertexList[truck[j]], distance)
 
 #load package data from csv
+#bigO = O(N^2)
 def loadPackageData(fileName):
         with open(fileName) as packages:
             packageData = csv.reader(packages, delimiter=',')
@@ -250,6 +263,7 @@ def loadPackageData(fileName):
  
                 PACKAGES.insert(id, pack)
 
+#bigO = O(N^2)
 #load distance data from csv
 def loadDistanceData(fileName):
     if os.path.isfile(fileName):
