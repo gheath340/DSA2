@@ -1,4 +1,5 @@
 #GARRETT HEATH 010229298
+#OVERALL BIGO = O(N^2) + O(N^2) + O(N^2) + O(N^3) + O(N^4) + 3O(2N) + 3O(N) + 2O(N) = O(N^4)
 import algorithm as algo
 import hashTable as hash
 import package as p
@@ -8,6 +9,7 @@ import os
 import truck
 import datetime
 import re
+from pathlib import Path
 
 PACKAGES = hash.HashTable(40)
 DISTANCEDICT = {}
@@ -28,11 +30,17 @@ t1Time = datetime.datetime(100,1,1,8,0,0)
 t2Time = datetime.datetime(100,1,1,9,5,0)
 t3Time = datetime.datetime(100,1,1,9,42,00)
 
-#OVERALL BIGO = O(N^2) + O(N^2) + O(N^2) + O(N^3) + O(N^4) + 3O(2N) + 3O(N) + 2O(N) = O(N^4)
 def main():
     #load all data
-    loadPackageData("/Users/garrettheath/Desktop/projects/DSA2/packageFile.csv")
-    loadDistanceData("/Users/garrettheath/Desktop/projects/DSA2/goodDistanceTable.csv")
+    absolute_path = os.path.dirname(__file__)
+    relative_path = "packageFile.csv"
+    full_path = os.path.join(absolute_path, relative_path)
+    loadPackageData(full_path)
+
+    absolute_path = os.path.dirname(__file__)
+    relative_path = "goodDistanceTable.csv"
+    full_path = os.path.join(absolute_path, relative_path)
+    loadDistanceData(full_path)
     #create graph data
     generateVertecies()
     startVertexEdgesCreate()
